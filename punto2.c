@@ -9,9 +9,10 @@ struct {
 } typedef Tarea;
 
 void inicializarArreglo (Tarea **arreglo, int cantidad);
-void cargarTareas (Tarea **arreglo, int cantidad);
+void cargarTareas (Tarea **arreglo, int cantidad, char *buff);
 void mostrarTarea (Tarea *arreglo);  //muestra una tarea
-Tarea* buscarTarea(Tarea **arreglo, int cantidad, int comparar); 
+Tarea* buscarTareaPorID(Tarea **arreglo, int cantidad, int comparar); 
+Tarea* buscarTareaPorPalabra(Tarea **arreglo, int cantidad, char *palabraClave);
 
 int main ()
 {
@@ -27,7 +28,8 @@ int main ()
     inicializarArreglo(tareasPendientes, ctdadTareas);
 
     //----3
-    cargarTareas(tareasPendientes, ctdadTareas);
+    char *buff = (char *) malloc(200*sizeof(char));
+    cargarTareas(tareasPendientes, ctdadTareas, buff);
 
     //----4
     int respuesta, j=0;
@@ -71,8 +73,8 @@ int main ()
     int id;
     printf("\nIngrese id de la tarea que busca: ");
     scanf("%d", &id);
-    tareaBuscadaP = buscarTarea(tareasPendientes, ctdadTareas, id);
-    tareaBuscadaR = buscarTarea(tareasRealizadas, ctdadTareas, id);
+    tareaBuscadaP = buscarTareaPorID(tareasPendientes, ctdadTareas, id);
+    tareaBuscadaR = buscarTareaPorID(tareasRealizadas, ctdadTareas, id);
     if (tareaBuscadaP == NULL && tareaBuscadaR == NULL)
     {
         puts("No se encontro la tarea");
@@ -88,6 +90,33 @@ int main ()
             mostrarTarea(tareaBuscadaP);
         }
     }
+
+    //----7
+    fflush(stdin);
+    char palabraClave[50];
+    printf("\nIngrese la palabra clave a buscar: ");
+    gets(palabraClave);
+    Tarea *tareaBuscadaPorPalabraP = buscarTareaPorPalabra(tareasPendientes, ctdadTareas, palabraClave);
+    Tarea *tareaBuscadaPorPalabraR = buscarTareaPorPalabra(tareasRealizadas, ctdadTareas, palabraClave);
+    if (tareaBuscadaPorPalabraP == NULL && tareaBuscadaPorPalabraR == NULL)
+    {
+        puts("No se encontro la tarea");
+    } else
+    {
+        puts("Si se encontro la tarea");
+        puts("\n------ Tarea ----------");
+        if (tareaBuscadaPorPalabraP == NULL)
+        {
+            mostrarTarea(tareaBuscadaPorPalabraR);
+        } else
+        {
+            mostrarTarea(tareaBuscadaPorPalabraP);
+        }
+    }
+
+    //libero memorias dinamicas
+    
+
     
 
     return 0;
@@ -101,10 +130,8 @@ void inicializarArreglo (Tarea **arreglo, int cantidad)
     }
 }
 
-void cargarTareas (Tarea **arreglo, int cantidad)
+void cargarTareas (Tarea **arreglo, int cantidad, char *buff)
 {
-    char *buff = (char *) malloc(200*sizeof(char));
-
     for (int i = 0; i < cantidad; i++)
     {
         arreglo[i] = (Tarea *) malloc(sizeof(Tarea));
@@ -127,11 +154,24 @@ void mostrarTarea (Tarea *arreglo)
     printf("\nDuracion: %d\n", arreglo->Duracion);
 }
 
-Tarea* buscarTarea(Tarea **arreglo, int cantidad, int comparar)
+Tarea* buscarTareaPorID(Tarea **arreglo, int cantidad, int comparar)
 {
     for (int i = 0; i < cantidad; i++)
     {
         if (arreglo[i] != NULL && arreglo[i]->TareaID == comparar)
+        {
+            return arreglo[i];
+        }
+    }
+    
+    return NULL;
+}
+
+Tarea* buscarTareaPorPalabra(Tarea **arreglo, int cantidad, char *palabraClave)
+{
+    for (int i = 0; i < cantidad; i++)
+    {
+        if (arreglo[i] != NULL && strstr(arreglo[i]->Descripcion, palabraClave) != NULL)
         {
             return arreglo[i];
         }
