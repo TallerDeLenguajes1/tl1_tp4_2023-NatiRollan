@@ -115,10 +115,33 @@ int main ()
     }
 
     //libero memorias dinamicas
-    
+    // Liberar memoria de las estructuras Tarea y las cadenas de descripción
+    for (int i = 0; i < ctdadTareas; i++)
+    {
+        if (tareasPendientes[i] != NULL)
+        {
+            free(tareasPendientes[i]->Descripcion);
+            free(tareasPendientes[i]);
+        }
+    }
 
-    
+    // Liberar memoria del arreglo tareasPendientes
+    free(tareasPendientes);
 
+    // Liberar memoria de las estructuras Tarea y las cadenas de descripción
+    for (int i = 0; i < ctdadTareas; i++)
+    {
+        if (tareasRealizadas[i] != NULL) //*
+        {
+            free(tareasRealizadas[i]->Descripcion);
+            free(tareasRealizadas[i]);
+        }
+    }
+
+    // Liberar memoria del arreglo tareasRealizadas
+    free(tareasRealizadas);
+    free(buff);
+    
     return 0;
 }
 
@@ -179,3 +202,7 @@ Tarea* buscarTareaPorPalabra(Tarea **arreglo, int cantidad, char *palabraClave)
     
     return NULL;
 }
+
+//* garantiza que solo se intente liberar la memoria si el puntero tareasRealizadas[i] apunta 
+//a una tarea que existe. Si el puntero es NULL, significa que no hay ninguna tarea asignada en esa posición
+// y no es necesario liberar la memoria.
